@@ -198,6 +198,10 @@ ifeq ($(TARGET),max32666)
     CFLAGS += -I$(MSDK_DIR)/Libraries/PeriphDrivers/Source/TRNG/
     WOLFCRYPT_SUPPORT=1
   endif
+  ifeq ($(MAX32666_NAND),1)
+    APP_OBJS+=$(MAX32666_NAND_OBJS)
+    APP_OBJS+=../hal/max32666_nand.o ../hal/max32666_trailer.o
+  endif
 endif
 
 ifeq ($(WOLFCRYPT_TEST),1)

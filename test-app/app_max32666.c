@@ -271,6 +271,7 @@ void main(void)
         GPIO0_EN0_SET = LED_BLUE_PIN;    /* configure as GPIO */
         GPIO0_OUT_EN |= LED_BLUE_PIN;    /* enable output */
         GPIO0_OUT_CLR = LED_BLUE_PIN;    /* drive low (LED on) */
+        wolfBoot_update_trigger();
     } else {
         /* Turn on green LED */
         GPIO0_EN0_SET = LED_GREEN_PIN;   /* configure as GPIO */

@@ -1,7 +1,7 @@
 MEMORY
 {
     FLASH (rx) : ORIGIN = @WOLFBOOT_TEST_APP_ADDRESS@, LENGTH = @WOLFBOOT_TEST_APP_SIZE@
-    RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 0x8C000 /* 560KB SRAM */
+    RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 0x70000 /* 448KB: usable SRAM when ECC is enabled */
 }
 
 _Min_Heap_Size = 0x2000; /* 8K heap for wolfCrypt MAA */

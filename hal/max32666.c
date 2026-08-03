@@ -339,6 +339,21 @@ void hal_init(void)
 
 #ifdef DEBUG_UART
     uart_init();
+#endif
+
+#if defined(MAX32666_NAND) && defined(__WOLFBOOT)
+    GCR_PERCKCN0 &= ~(GCR_PERCKCN0_GPIO0D | GCR_PERCKCN0_GPIO1D);
+    for (uint32_t base = GPIO0_BASE; base <= GPIO1_BASE; base += 0x1000UL) {
+        *(volatile uint32_t *)(base + GPIO_VSSEL_OFF) = 0xFFFFFFFFUL;
+        *(volatile uint32_t *)(base + GPIO_PS_OFF) = 0xFFFFFFFFUL;
+        *(volatile uint32_t *)(base + GPIO_PAD_CFG1_OFF) = 0xFFFFFFFFUL;
+        *(volatile uint32_t *)(base + GPIO_PAD_CFG2_OFF) = 0;
+    }
+    if (max32666_nand_init() != 0)
+        wolfBoot_printf("NAND init failed\n");
+#endif
+
+#ifdef DEBUG_UART
 
 #ifdef __WOLFBOOT
 #ifdef WOLFBOOT_REPRODUCIBLE_BUILD

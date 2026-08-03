@@ -280,6 +280,44 @@ ifeq ($(ARCH),ARM)
       endif
       WOLFCRYPT_OBJS+=$(WOLFBOOT_LIB_WOLFSSL)/wolfcrypt/src/port/maxim/max3266x.o
     endif
+    # External SPI NAND (Micron MT29F8G01ADBFD12) via Shasta bad block layer.
+    # Requires the old SDK (MAX3266X_OLD=1, MSDK_DIR pointing at it)
+    ifeq ($(MAX32666_NAND),1)
+      ifneq ($(MAX3266X_OLD),1)
+        $(error MAX32666_NAND requires MAX3266X_OLD=1 with MSDK_DIR set to the old SDK)
+      endif
+      CFLAGS+=-DMAX32666_NAND -DCUSTOM_PARTITION_TRAILER
+      ifeq ($(MAX32666_NAND_BBT_CREATE),1)
+        CFLAGS+=-DMAX32666_NAND_BBT_CREATE
+      endif
+      ifneq ($(MAX32666_TRAILER_ADDRESS),)
+        CFLAGS+=-DWOLFBOOT_TRAILER_ADDRESS=$(MAX32666_TRAILER_ADDRESS)
+      endif
+      SHASTA_DIR?=$(WOLFBOOT_ROOT)/ShastaForWolfBoot
+      MAX32666_NAND_CMSIS_CORE?=$(MSDK_DIR)/Libraries/CMSIS/Include
+      CFLAGS+=-I$(SHASTA_DIR)
+      MAX32666_NAND_OBJS:= \
+        $(SHASTA_DIR)/ZioNandBadBlocks.o \
+        $(SHASTA_DIR)/ZioOnfiMemory.o \
+        $(SHASTA_DIR)/ZioHalSpi0.o \
+        $(SHASTA_DIR)/ZioHalGpioUtil.o \
+        $(SHASTA_DIR)/ZioCrc.o \
+        $(SHASTA_DIR)/ZioUtils.o \
+        $(SHASTA_DIR)/ZioMath.o \
+        $(WOLFBOOT_ROOT)/hal/max32666_nand/zio_shim.o
+      OBJS+=$(MAX32666_NAND_OBJS)
+      OBJS+=hal/max32666_nand.o hal/max32666_trailer.o
+      MAX32666_NAND_CFLAGS:=-I$(WOLFBOOT_ROOT)/hal/max32666_nand/compat \
+        -I$(SHASTA_DIR)/CMSIS/Device/Maxim/MAX32665/Include \
+        -I$(SHASTA_DIR)/MaximInc/MAX32665PeriphDriver/Include \
+        -I$(MAX32666_NAND_CMSIS_CORE) \
+        -DZIO_STATIC=static -DTARGET=MAX32665 -DTARGET_REV=0x4131
+      MAX32666_NAND_WFLAGS:=-Wno-error -Wno-unknown-pragmas \
+        -Wno-pointer-sign -Wno-unused-parameter
+$(MAX32666_NAND_OBJS): CFLAGS+=$(MAX32666_NAND_CFLAGS) $(MAX32666_NAND_WFLAGS)
+$(SHASTA_DIR)/ZioUtils.o: CFLAGS+=-O0
+hal/max32666_nand.o ../hal/max32666_nand.o: CFLAGS+=-Wno-unknown-pragmas
+    endif
   endif
 
   ifeq ($(TARGET),pic32cz)

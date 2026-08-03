@@ -327,12 +327,16 @@
 #define GPIO_OUT_SET_OFF        0x1CUL
 #define GPIO_OUT_CLR_OFF        0x20UL
 #define GPIO_IN_OFF             0x24UL    /* Input data */
+#define GPIO_PAD_CFG1_OFF       0x60UL    /* Pullup/pulldown config */
+#define GPIO_PAD_CFG2_OFF       0x64UL
 #define GPIO_EN1_OFF            0x68UL    /* Alternate function select */
 #define GPIO_EN1_SET_OFF        0x6CUL
 #define GPIO_EN1_CLR_OFF        0x70UL
 #define GPIO_EN2_OFF            0x74UL
 #define GPIO_EN2_SET_OFF        0x78UL
 #define GPIO_EN2_CLR_OFF        0x7CUL
+#define GPIO_PS_OFF             0xB8UL    /* Pull strength (1=25K) */
+#define GPIO_VSSEL_OFF          0xC0UL    /* Voltage select (1=VDDIOH) */
 
 /* GPIO0 registers */
 #define GPIO0_EN0               (*(volatile uint32_t *)(GPIO0_BASE + GPIO_EN0_OFF))
@@ -389,6 +393,10 @@
 void uart_init(void);
 void uart_write(const char* buf, unsigned int sz);
 int uart_read(char* c);
+#endif
+
+#ifdef MAX32666_NAND
+int max32666_nand_init(void);
 #endif
 
 #endif /* MAX32666_H */
